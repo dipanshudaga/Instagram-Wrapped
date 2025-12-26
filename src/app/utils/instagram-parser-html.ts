@@ -151,7 +151,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
     }
   }
 
-  console.log('🚀 Starting Instagram HTML Parser (Spec-Based Rewrite)');
 
   // ============================================================================
   // STEP 0: USER IDENTIFICATION (The "isMe" System)
@@ -231,10 +230,8 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
     }
   }
 
-  console.log('🛡️ Identity:', identity);
 
   if (!identity.username && !identity.name) {
-    console.warn('⚠️ Could not detect user identity - using heuristic fallback');
   }
 
   // Helper function to check if a name matches the user's identity
@@ -282,9 +279,7 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
             }
             
             data.accountAge = { years, months };
-            console.log(`📅 Account Age: ${years} years, ${months} months`);
           } catch (e) {
-            console.error('❌ Error parsing account age:', e);
           }
           break;
         }
@@ -343,7 +338,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
       emoji: getEmojiForTopic(name)
     }));
     
-    console.log(`🏷️ Topics: ${data.topics.length} found`);
   }
 
   // ============================================================================
@@ -391,7 +385,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
   }
   
   data.contentCreated = { posts: totalPosts, reels: reelsCount, stories: storiesCount };
-  console.log(`📸 Content: ${totalPosts} posts, ${reelsCount} reels, ${storiesCount} stories`);
 
   // ============================================================================
   // METRIC 4: LIKES TRACKING
@@ -482,7 +475,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
       data.likes.topCreatorCount = sortedCreators[0][1];
     }
     
-    console.log(`❤️ Likes: ${data.likes.total} total | Top: ${data.likes.topCreator} (${data.likes.topCreatorCount})`);
   }
 
   // ============================================================================
@@ -539,7 +531,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
 
         // Debug first comment
         if (totalComments === 0) {
-          console.log(`🔍 First comment debug:
             mediaOwner: "${mediaOwner}"
             normalizedOwner: "${normalizedOwner}"
             identity.username: "${identity.username}"
@@ -564,12 +555,10 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
           commentCreatorCounts[mediaOwner] = (commentCreatorCounts[mediaOwner] || 0) + 1;
           // Debug: log first few non-self comments
           if (totalCommentsOnOthers <= 3) {
-            console.log(`✅ Comment on other's post: "${mediaOwner}"`);
           }
         } else {
           // Debug: log first few self-comments
           if (totalComments - totalCommentsOnOthers < 3) {
-            console.log(`❌ Self-comment detected: "${mediaOwner}" (user: ${identity.username})`);
           }
         }
       }
@@ -582,7 +571,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
   const sortedCommentCreators = Object.entries(commentCreatorCounts)
     .sort((a, b) => b[1] - a[1]);
 
-  console.log(`💬 All comment creators:`, sortedCommentCreators.slice(0, 10));
 
   if (sortedCommentCreators.length > 0) {
     const topCount = sortedCommentCreators[0][1];
@@ -604,13 +592,10 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
 
     data.comments.topCreatorCount = topCount;
   } else {
-    console.log('⚠️ No comment creators found after filtering (all comments may be on your own posts)');
   }
 
   // Use totalCommentsOnOthers instead of totalComments (exclude self-comments)
   data.comments.total = totalCommentsOnOthers;
-  console.log(`💬 Comments: ${totalCommentsOnOthers} total (${totalComments} including self) | Top: ${data.comments.topCreator} (${data.comments.topCreatorCount})`);
-  console.log(`💬 Comment creators found: ${sortedCommentCreators.length}`);
 
   // ============================================================================
   // METRICS 6-9: MESSAGE ANALYSIS
@@ -630,7 +615,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
       if (folder) chatFolders.add(folder);
     });
     
-    console.log(`💬 Processing ${chatFolders.size} chat folders...`);
     
     for (const chatFolder of Array.from(chatFolders)) {
       // Find message files
@@ -824,7 +808,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
       .slice(0, 3)
       .map(([name, count]) => ({ name, count }));
     
-    console.log(`👥 Top Chat Partners:`, data.topChatPartners);
     
     // METRIC 7: Top Shared To
     data.topSharedTo = Object.entries(outboundShares)
@@ -832,7 +815,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
       .slice(0, 3)
       .map(([name, count]) => ({ name, count }));
     
-    console.log(`📤 Top Shared To:`, data.topSharedTo);
     
     // METRIC 8: Top Received From
     data.topReceivedFrom = Object.entries(inboundShares)
@@ -840,7 +822,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
       .slice(0, 3)
       .map(([name, count]) => ({ name, count }));
     
-    console.log(`📥 Top Received From:`, data.topReceivedFrom);
     
     // METRIC 9: Average Response Time
     if (responseTimes.length > 0) {
@@ -850,12 +831,9 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
         minutes: Math.floor((avgSeconds % 3600) / 60)
       };
       
-      console.log(`⚡ Avg Response Time: ${data.avgResponseTime.hours}h ${data.avgResponseTime.minutes}m (from ${responseTimes.length} samples)`);
     } else {
-      console.log('⚠️ No valid response times found');
     }
   }
 
-  console.log('✅ Parsing complete!');
   return data;
 }

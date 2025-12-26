@@ -21,13 +21,11 @@ export default function App() {
       } else if (file) {
         // Parse real Instagram HTML data from ZIP
         const data = await parseInstagramData(file);
-        console.log('✅ Parsed data:', data);
         setWrappedData(data);
         setShowWrapped(true);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to parse Instagram data');
-      console.error('❌ Parse error:', err);
     } finally {
       setIsLoading(false);
     }

@@ -64,8 +64,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
     }
   }
 
-  console.log('🚀 Starting parsing...');
-
   // 1. GET USERNAME - MULTIPLE ATTEMPTS
   const usernamePaths = [
     'personal_information/personal_information/personal_information.html',
@@ -87,17 +85,12 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
         if (match) {
           username = extractText(match[1]).replace(/\s+/g, '');
           if (username) {
-            console.log('✅ Username:', username);
             break;
           }
         }
       }
       if (username) break;
     }
-  }
-
-  if (!username) {
-    console.error('❌ Could not detect username');
   }
 
   // 2. ACCOUNT AGE
@@ -121,7 +114,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
             months += 12;
           }
           data.accountAge = { years, months };
-          console.log(`📅 ${years}y ${months}m`);
         } catch (e) {}
         break;
       }
@@ -143,7 +135,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
           const name = extractText(m[1]);
           return { name, emoji: getEmojiForTopic(name) };
         });
-        console.log(`🏷️  ${data.topics.length} topics`);
         break;
       }
     }
@@ -176,7 +167,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
   const stories = storiesHTML ? (storiesHTML.match(/<div class="pam _3-95 _2ph- _a6-g uiBoxWhite noborder">/g) || []).length : 0;
   
   data.contentCreated = { posts, reels, stories };
-  console.log(`📸 ${posts}p ${reels}r ${stories}s`);
 
   // 5. LIKES
   const likesHTML = await readHTML('your_instagram_activity/likes/liked_posts.html');
@@ -208,7 +198,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
       topCreator: sorted[0] ? `@${sorted[0][0]}` : null,
       topCreatorCount: sorted[0] ? sorted[0][1] : 0
     };
-    console.log(`❤️  ${total} likes | Top: ${data.likes.topCreator}`);
   }
 
   // 6. COMMENTS
@@ -247,7 +236,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
     topCreator: sortedComments[0] ? `@${sortedComments[0][0]}` : null,
     topCreatorCount: sortedComments[0] ? sortedComments[0][1] : 0
   };
-  console.log(`💬 ${totalComments} comments | Top: ${data.comments.topCreator}`);
 
   // 7. MESSAGES
   const inboxFolder = contents.folder('your_instagram_activity/messages/inbox');
@@ -264,8 +252,6 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
         chatFolders.push(folder);
       }
     });
-    
-    console.log(`💬 ${chatFolders.length} chats`);
     
     for (const chatFolder of chatFolders) {
       const msgFiles: string[] = [];
@@ -361,10 +347,8 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
         hours: Math.floor(avg / 3600),
         minutes: Math.floor((avg % 3600) / 60)
       };
-      console.log(`⚡ ${data.avgResponseTime.hours}h ${data.avgResponseTime.minutes}m`);
     }
   }
 
-  console.log('✅ Done');
   return data;
 }

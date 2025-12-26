@@ -153,7 +153,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         // Toast notification removed
       }
     } catch (error) {
-      console.error('Error sharing:', error);
       // Fallback: Download if share fails (no clipboard copy)
       try {
         if (cardRef.current) {
@@ -170,7 +169,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
             link.click();
           }
         }
-      } catch (e) { console.error('Download fallback failed', e) }
+      } catch (e) { /* Silent fallback */ }
     } finally {
       setIsSharing(false);
       setIsPaused(false); // Resume after sharing
