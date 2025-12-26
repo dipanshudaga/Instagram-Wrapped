@@ -529,15 +529,7 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
         const normalizedUsername = identity.username?.toLowerCase().trim() || '';
         const normalizedName = identity.name?.toLowerCase().trim() || '';
 
-        // Debug first comment
-        if (totalComments === 0) {
-            mediaOwner: "${mediaOwner}"
-            normalizedOwner: "${normalizedOwner}"
-            identity.username: "${identity.username}"
-            normalizedUsername: "${normalizedUsername}"
-            identity.name: "${identity.name}"
-            normalizedName: "${normalizedName}"`);
-        }
+        // Debug first comment (removed)
 
         // Also check if it's just the username without @
         const ownerWithoutAt = normalizedOwner.replace(/^@/, '');
