@@ -64,7 +64,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
-  const [preGeneratedImages, setPreGeneratedImages] = useState<{ [key: number]: Blob }>({});
   // SoundPlayer removed
   const cardRef = useRef<HTMLDivElement>(null);
   const totalCards = 10;
@@ -82,44 +81,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       setDirection(-1);
       setCurrentCard(prev => prev - 1);
     }
-  }, [currentCard]);
-
-  // Pre-generate images for all slides (cards 1-8, excluding 0 and 9)
-  useEffect(() => {
-    const generateImages = async () => {
-      if (!cardRef.current) return;
-
-      // Generate images for cards 1-8 in the background
-      for (let i = 1; i <= 8; i++) {
-        // Wait for card to be visible
-        if (currentCard === i && cardRef.current) {
-          try {
-            const blob = await htmlToImage.toBlob(cardRef.current, {
-              cacheBust: true,
-              pixelRatio: 2,
-              backgroundColor: '#000',
-              filter: (node) => {
-                if (node.id === 'ui-close-btn' || node.id === 'ui-share-btn' || node.id === 'ui-nav-left' || node.id === 'ui-nav-right' || node.id === 'ui-progress-bar') {
-                  return false;
-                }
-                return true;
-              },
-              style: {
-                borderRadius: '0px',
-              }
-            });
-
-            if (blob) {
-              setPreGeneratedImages(prev => ({ ...prev, [i]: blob }));
-            }
-          } catch (error) {
-            // Silent fail - will generate on demand if needed
-          }
-        }
-      }
-    };
-
-    generateImages();
   }, [currentCard]);
 
   // Auto-scroll effect
@@ -150,26 +111,21 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     setIsPaused(true); // Pause while sharing
 
     try {
-      // Use pre-generated image if available, otherwise generate on demand
-      let blob = preGeneratedImages[currentCard];
-
-      if (!blob && cardRef.current) {
-        // Generate image on demand
-        blob = await htmlToImage.toBlob(cardRef.current, {
-          cacheBust: true,
-          pixelRatio: 2,
-          backgroundColor: '#000',
-          filter: (node) => {
-            if (node.id === 'ui-close-btn' || node.id === 'ui-share-btn' || node.id === 'ui-nav-left' || node.id === 'ui-nav-right' || node.id === 'ui-progress-bar') {
-              return false;
-            }
-            return true;
-          },
-          style: {
-            borderRadius: '0px',
+      // Generate image on demand
+      const blob = await htmlToImage.toBlob(cardRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: '#000',
+        filter: (node) => {
+          if (node.id === 'ui-close-btn' || node.id === 'ui-share-btn' || node.id === 'ui-nav-left' || node.id === 'ui-nav-right' || node.id === 'ui-progress-bar') {
+            return false;
           }
-        });
-      }
+          return true;
+        },
+        style: {
+          borderRadius: '0px',
+        }
+      });
 
       if (!blob) throw new Error('Failed to generate image');
 
@@ -274,23 +230,11 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     >
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
       <motion.div variants={itemVariants} className="text-center absolute top-24 bottom-28 left-8 right-8 flex flex-col items-center justify-center">
-        <motion.p
-          className="text-white/80 mb-3"
-          style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '24px' }}
-        >
-          Your
-        </motion.p>
-        <motion.h1
-          className="text-white leading-none mb-2"
-          style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, letterSpacing: '-0.02em', fontSize: '52px' }}
-        >
-          INSTAGRAM
-        </motion.h1>
         <motion.h1
           className="text-white leading-none mb-8"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, letterSpacing: '-0.02em', fontSize: '52px' }}
         >
-          WRAPPED
+          INSTAGRAM WRAPPED
         </motion.h1>
         <motion.p
           variants={itemVariants}
@@ -300,6 +244,29 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
           Let's dive in
         </motion.p>
       </motion.div>
+
+      {/* Floating sparkles */}
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute text-2xl"
+          style={{
+            left: `${15 + (i % 3) * 35}%`,
+            top: `${15 + Math.floor(i / 3) * 60}%`,
+          }}
+          animate={{
+            y: [0, -15, 0],
+            opacity: [0.4, 1, 0.4],
+          }}
+          transition={{
+            duration: 2 + i * 0.3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          ✨
+        </motion.div>
+      ))}
     </motion.div>,
 
     // CARD 2: Account Age
@@ -315,21 +282,35 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       {/* Background accent */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-500/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Background Icon - Animated */}
+      <motion.div
+        className="absolute -right-12 top-20 text-[200px] opacity-5 pointer-events-none rotate-12"
+        animate={{
+          y: [0, -20, 0],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
+        📅
+      </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
         {displayData.accountAge && (
           <>
             <motion.p
               variants={itemVariants}
-              className="text-white/60 uppercase tracking-widest mb-3"
-              style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '12px' }}
+              className="text-white/60 tracking-widest mb-6"
+              style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '20px' }}
             >
-              Chronically Online Since
+              Chronically online since
             </motion.p>
             <motion.div variants={itemVariants} className="mb-6">
               <div className="text-white leading-none mb-2">
                 <NumberCounter
                   value={displayData.accountAge.years}
-                  fontSize="90px"
+                  fontSize="64px"
                 />
               </div>
               <p className="text-white" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '24px' }}>
@@ -338,10 +319,10 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
             </motion.div>
             {displayData.accountAge.months > 0 && (
               <motion.div variants={itemVariants} className="mb-6">
-                <div className="text-white leading-none mb-1">
-                  <NumberCounter value={displayData.accountAge.months} fontSize="50px" />
+                <div className="text-white leading-none mb-2">
+                  <NumberCounter value={displayData.accountAge.months} fontSize="64px" />
                 </div>
-                <p className="text-white/80" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '16px' }}>
+                <p className="text-white" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '24px' }}>
                   MONTHS
                 </p>
               </motion.div>
@@ -363,9 +344,9 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
       {/* Background Icon - Animated */}
       <motion.div
-        className="absolute -right-12 top-20 text-[200px] opacity-5 pointer-events-none rotate-12"
+        className="absolute -left-12 bottom-20 text-[200px] opacity-5 pointer-events-none -rotate-12"
         animate={{
-          y: [0, -20, 0],
+          y: [0, 15, 0],
         }}
         transition={{
           duration: 6,
@@ -373,7 +354,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
           ease: "easeInOut"
         }}
       >
-        💬
+        🌟
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
         <motion.div variants={itemVariants} className="mb-8">
@@ -396,7 +377,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
             }}
           >
             <div className="flex items-center gap-4">
-              <div className="text-white/60 text-2xl font-bold" style={{ fontFamily: 'Outfit, sans-serif' }}>
+              <div className="text-white/60 text-lg font-semibold" style={{ fontFamily: 'Outfit, sans-serif' }}>
                 #{i + 1}
               </div>
               <p className="text-white text-base md:text-xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
@@ -430,9 +411,9 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
       {/* Background Icon - Animated */}
       <motion.div
-        className="absolute -left-12 bottom-20 text-[200px] opacity-5 pointer-events-none -rotate-12"
+        className="absolute -left-12 top-20 text-[200px] opacity-5 pointer-events-none rotate-12"
         animate={{
-          y: [0, 15, 0],
+          y: [0, -15, 0],
         }}
         transition={{
           duration: 7,
@@ -490,9 +471,9 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
       {/* Background Icon - Animated */}
       <motion.div
-        className="absolute right-0 bottom-0 text-[200px] opacity-5 pointer-events-none rotate-6"
+        className="absolute -right-12 bottom-20 text-[200px] opacity-5 pointer-events-none -rotate-12"
         animate={{
-          y: [0, -18, 0],
+          y: [0, 18, 0],
         }}
         transition={{
           duration: 8,
@@ -500,7 +481,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
           ease: "easeInOut"
         }}
       >
-        ✏️
+        💬
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
         <motion.div variants={itemVariants} className="mb-8">
@@ -545,6 +526,20 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       style={{ background: 'radial-gradient(circle at center, #06B6D4 0%, #1a1a1a 100%)' }}
     >
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+      {/* Background Icon - Animated */}
+      <motion.div
+        className="absolute -right-12 top-20 text-[200px] opacity-5 pointer-events-none rotate-12"
+        animate={{
+          y: [0, -15, 0],
+        }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
+        🎨
+      </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
         <motion.h2
           variants={itemVariants}
@@ -625,9 +620,9 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
       {/* Background Icon - Animated */}
       <motion.div
-        className="absolute -right-8 bottom-32 text-[180px] opacity-5 pointer-events-none -rotate-12"
+        className="absolute -left-12 bottom-20 text-[180px] opacity-5 pointer-events-none -rotate-12"
         animate={{
-          y: [0, -15, 0],
+          y: [0, 15, 0],
         }}
         transition={{
           duration: 6.5,
@@ -635,7 +630,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
           ease: "easeInOut"
         }}
       >
-        📤
+        🔥
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
         <motion.div variants={itemVariants} className="mb-8">
@@ -658,7 +653,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
             }}
           >
             <div className="flex items-center gap-4">
-              <div className="text-white/60 text-2xl font-bold" style={{ fontFamily: 'Outfit, sans-serif' }}>
+              <div className="text-white/60 text-lg font-semibold" style={{ fontFamily: 'Outfit, sans-serif' }}>
                 #{i + 1}
               </div>
               <p className="text-white text-base md:text-xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
@@ -685,9 +680,9 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
       {/* Background Icon - Animated */}
       <motion.div
-        className="absolute -left-8 top-32 text-[180px] opacity-5 pointer-events-none rotate-12"
+        className="absolute -left-12 top-20 text-[180px] opacity-5 pointer-events-none rotate-12"
         animate={{
-          y: [0, 18, 0],
+          y: [0, -15, 0],
         }}
         transition={{
           duration: 7.5,
@@ -695,7 +690,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
           ease: "easeInOut"
         }}
       >
-        📥
+        📩
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
         <motion.div variants={itemVariants} className="mb-8">
@@ -718,7 +713,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
             }}
           >
             <div className="flex items-center gap-4">
-              <div className="text-white/60 text-2xl font-bold" style={{ fontFamily: 'Outfit, sans-serif' }}>
+              <div className="text-white/60 text-lg font-semibold" style={{ fontFamily: 'Outfit, sans-serif' }}>
                 #{i + 1}
               </div>
               <p className="text-white text-base md:text-xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
@@ -726,7 +721,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               </p>
             </div>
             <p className="text-white/90 text-sm md:text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
-              {item.count} shares
+              {item.count} reels
             </p>
           </motion.div>
         ))}
@@ -743,6 +738,20 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       style={{ background: 'radial-gradient(circle at center, #1E293B 0%, #000000 100%)' }}
     >
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+      {/* Background Icon - Animated */}
+      <motion.div
+        className="absolute -right-12 bottom-20 text-[200px] opacity-5 pointer-events-none -rotate-12"
+        animate={{
+          y: [0, 18, 0],
+        }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
+        🧠
+      </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
         <motion.div variants={itemVariants} className="mb-6">
           <h2 className="text-white text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900 }}>
@@ -794,19 +803,20 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       }}
     >
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
-      <motion.div variants={itemVariants} className="text-center">
-        <p className="text-white/80 mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '24px' }}>
-          That's your
-        </p>
-        <h1 className="text-white leading-tight mb-1" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, letterSpacing: '-0.04em', fontSize: '52px' }}>
-          Instagram
-        </h1>
-        <h1 className="text-white leading-tight mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, letterSpacing: '-0.04em', fontSize: '52px' }}>
-          Wrapped
-        </h1>
-        <p className="text-white/70" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500, fontSize: '20px' }}>
-          Thanks for being here
-        </p>
+      <motion.div variants={itemVariants} className="text-center absolute top-24 bottom-28 left-8 right-8 flex flex-col items-center justify-center">
+        <motion.h1
+          className="text-white leading-none mb-8"
+          style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, letterSpacing: '-0.02em', fontSize: '52px' }}
+        >
+          AND IT'S A WRAP
+        </motion.h1>
+        <motion.p
+          variants={itemVariants}
+          className="text-white/70"
+          style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500, fontSize: '18px' }}
+        >
+          Thank you for being here
+        </motion.p>
       </motion.div>
 
       {/* Floating sparkles */}
@@ -956,15 +966,15 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.4 }}
             disabled={isSharing}
-            className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full text-white/70 hover:text-white hover:bg-white/20 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
+            className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-white/70 hover:text-white hover:bg-white/20 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
             style={{ touchAction: 'manipulation' }}
           >
             {isSharing ? (
-              <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <Share2 className="w-3.5 h-3.5" />
+              <Share2 className="w-4 h-4" />
             )}
-            <span className="text-[11px]" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+            <span className="text-xs" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
               {isSharing ? 'Sharing...' : 'Share'}
             </span>
           </motion.button>
