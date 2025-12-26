@@ -64,6 +64,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [preGeneratedImages, setPreGeneratedImages] = useState<{ [key: number]: Blob }>({});
   // SoundPlayer removed
   const cardRef = useRef<HTMLDivElement>(null);
   const totalCards = 10;
@@ -81,6 +82,44 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       setDirection(-1);
       setCurrentCard(prev => prev - 1);
     }
+  }, [currentCard]);
+
+  // Pre-generate images for all slides (cards 1-8, excluding 0 and 9)
+  useEffect(() => {
+    const generateImages = async () => {
+      if (!cardRef.current) return;
+
+      // Generate images for cards 1-8 in the background
+      for (let i = 1; i <= 8; i++) {
+        // Wait for card to be visible
+        if (currentCard === i && cardRef.current) {
+          try {
+            const blob = await htmlToImage.toBlob(cardRef.current, {
+              cacheBust: true,
+              pixelRatio: 2,
+              backgroundColor: '#000',
+              filter: (node) => {
+                if (node.id === 'ui-close-btn' || node.id === 'ui-share-btn' || node.id === 'ui-nav-left' || node.id === 'ui-nav-right' || node.id === 'ui-progress-bar') {
+                  return false;
+                }
+                return true;
+              },
+              style: {
+                borderRadius: '0px',
+              }
+            });
+
+            if (blob) {
+              setPreGeneratedImages(prev => ({ ...prev, [i]: blob }));
+            }
+          } catch (error) {
+            // Silent fail - will generate on demand if needed
+          }
+        }
+      }
+    };
+
+    generateImages();
   }, [currentCard]);
 
   // Auto-scroll effect
@@ -111,30 +150,35 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     setIsPaused(true); // Pause while sharing
 
     try {
-      // 1. Generate image
-      const dataUrl = await htmlToImage.toPng(cardRef.current, {
-        cacheBust: true,
-        pixelRatio: 2, // Higher quality
-        backgroundColor: '#000', // Ensure background is filled
-        filter: (node) => {
-          // Filter out UI elements we don't want in the share image
-          if (node.id === 'ui-close-btn' || node.id === 'ui-share-btn' || node.id === 'ui-nav-left' || node.id === 'ui-nav-right' || node.id === 'ui-progress-bar') {
-            return false;
+      // Use pre-generated image if available, otherwise generate on demand
+      let blob = preGeneratedImages[currentCard];
+
+      if (!blob && cardRef.current) {
+        // Generate image on demand
+        blob = await htmlToImage.toBlob(cardRef.current, {
+          cacheBust: true,
+          pixelRatio: 2,
+          backgroundColor: '#000',
+          filter: (node) => {
+            if (node.id === 'ui-close-btn' || node.id === 'ui-share-btn' || node.id === 'ui-nav-left' || node.id === 'ui-nav-right' || node.id === 'ui-progress-bar') {
+              return false;
+            }
+            return true;
+          },
+          style: {
+            borderRadius: '0px',
           }
-          return true;
-        },
-        style: {
-          borderRadius: '0px', // Reset border radius
-        }
-      });
-      const blob = await (await fetch(dataUrl)).blob();
+        });
+      }
 
       if (!blob) throw new Error('Failed to generate image');
 
-      const file = new File([blob], 'instagram-wrapped-2024.png', { type: 'image/png' });
+      // Slide number: cards 1-8 map to slides 2-9 (card 0 is intro, card 9 is outro)
+      const slideNumber = currentCard + 1;
+      const fileName = `Instagram Wrapped - ${slideNumber}.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
 
       // 2. Share using Web Share API
-      // Note: navigator.canShare with files is strictly required to verify file sharing support
       const shareData = {
         files: [file],
         title: 'My Instagram Wrapped',
@@ -146,30 +190,41 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       } else {
         // Fallback: Download the image
         const link = document.createElement('a');
-        link.download = 'instagram-wrapped-2024.png';
+        link.download = fileName;
         link.href = URL.createObjectURL(blob);
         link.click();
-
-        // Toast notification removed
       }
-    } catch (error) {
-      // Fallback: Download if share fails (no clipboard copy)
-      try {
-        if (cardRef.current) {
-          const blob = await htmlToImage.toBlob(cardRef.current, {
-            cacheBust: true,
-            pixelRatio: 2,
-            backgroundColor: '#000',
-            style: { borderRadius: '0px' }
-          });
-          if (blob) {
-            const link = document.createElement('a');
-            link.download = 'instagram-wrapped-2024.png';
-            link.href = URL.createObjectURL(blob);
-            link.click();
+    } catch (error: any) {
+      // Only handle non-abort errors
+      if (error?.name === 'AbortError') {
+        // User cancelled the share - do nothing
+      } else {
+        // Fallback: Download if share fails
+        try {
+          if (cardRef.current) {
+            const blob = await htmlToImage.toBlob(cardRef.current, {
+              cacheBust: true,
+              pixelRatio: 2,
+              backgroundColor: '#000',
+              filter: (node) => {
+                if (node.id === 'ui-close-btn' || node.id === 'ui-share-btn' || node.id === 'ui-nav-left' || node.id === 'ui-nav-right' || node.id === 'ui-progress-bar') {
+                  return false;
+                }
+                return true;
+              },
+              style: { borderRadius: '0px' }
+            });
+            if (blob) {
+              const slideNumber = currentCard + 1;
+              const fileName = `Instagram Wrapped - ${slideNumber}.png`;
+              const link = document.createElement('a');
+              link.download = fileName;
+              link.href = URL.createObjectURL(blob);
+              link.click();
+            }
           }
-        }
-      } catch (e) { /* Silent fallback */ }
+        } catch (e) { /* Silent fallback */ }
+      }
     } finally {
       setIsSharing(false);
       setIsPaused(false); // Resume after sharing
@@ -321,12 +376,12 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         💬
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-10">
-          <h2 className="text-white text-3xl md:text-4xl mb-3" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}>
+        <motion.div variants={itemVariants} className="mb-8">
+          <h2 className="text-white text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}>
             Your top 3
           </h2>
           <p className="text-white/80" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '20px', lineHeight: 1.4 }}>
-            chat partners
+            gossip partners
           </p>
         </motion.div>
 
@@ -344,12 +399,12 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               <div className="text-white/60 text-2xl font-bold" style={{ fontFamily: 'Outfit, sans-serif' }}>
                 #{i + 1}
               </div>
-              <p className="text-white text-xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
-                {truncateText(partner.name, 16)}
+              <p className="text-white text-base md:text-xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                {truncateText(partner.name, 20)}
               </p>
             </div>
-            <p className="text-white/90 text-lg" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
-              {formatNumber(partner.count)}
+            <p className="text-white/90 text-sm md:text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
+              {formatNumber(partner.count)} messages
             </p>
           </motion.div>
         ))}
@@ -388,8 +443,8 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         ❤️
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-10">
-          <div className="text-white leading-none mb-4">
+        <motion.div variants={itemVariants} className="mb-8">
+          <div className="text-white leading-none mb-3">
             <NumberCounter
               value={displayData.likes?.total || 0}
               fontSize="64px"
@@ -448,8 +503,8 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         ✏️
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-10">
-          <div className="text-white leading-none mb-4">
+        <motion.div variants={itemVariants} className="mb-8">
+          <div className="text-white leading-none mb-3">
             <NumberCounter value={displayData.comments?.total || 0} fontSize="64px" />
           </div>
           <p className="text-white text-2xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, lineHeight: 1.3 }}>
@@ -493,7 +548,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
         <motion.h2
           variants={itemVariants}
-          className="text-white text-3xl mb-10"
+          className="text-white text-3xl mb-8"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}
         >
           You created
@@ -583,8 +638,8 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         📤
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-10">
-          <h2 className="text-white text-3xl md:text-4xl mb-3" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}>
+        <motion.div variants={itemVariants} className="mb-8">
+          <h2 className="text-white text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}>
             You share reels
           </h2>
           <p className="text-white/80" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '20px', lineHeight: 1.4 }}>
@@ -606,12 +661,12 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               <div className="text-white/60 text-2xl font-bold" style={{ fontFamily: 'Outfit, sans-serif' }}>
                 #{i + 1}
               </div>
-              <p className="text-white text-xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
-                {truncateText(item.name, 14)}
+              <p className="text-white text-base md:text-xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                {truncateText(item.name, 20)}
               </p>
             </div>
-            <p className="text-white/90 text-lg" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
-              {item.count}
+            <p className="text-white/90 text-sm md:text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
+              {item.count} shares
             </p>
           </motion.div>
         ))}
@@ -643,8 +698,8 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         📥
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-10">
-          <h2 className="text-white text-3xl md:text-4xl mb-3" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}>
+        <motion.div variants={itemVariants} className="mb-8">
+          <h2 className="text-white text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}>
             You get reels
           </h2>
           <p className="text-white/80" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '20px', lineHeight: 1.4 }}>
@@ -666,12 +721,12 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               <div className="text-white/60 text-2xl font-bold" style={{ fontFamily: 'Outfit, sans-serif' }}>
                 #{i + 1}
               </div>
-              <p className="text-white text-xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
-                {truncateText(item.name, 14)}
+              <p className="text-white text-base md:text-xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                {truncateText(item.name, 20)}
               </p>
             </div>
-            <p className="text-white/90 text-lg" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
-              {item.count}
+            <p className="text-white/90 text-sm md:text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
+              {item.count} shares
             </p>
           </motion.div>
         ))}
@@ -689,8 +744,8 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     >
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-4">
-          <h2 className="text-white text-3xl md:text-4xl mb-1" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900 }}>
+        <motion.div variants={itemVariants} className="mb-6">
+          <h2 className="text-white text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900 }}>
             Your Algorithm
           </h2>
           <p className="text-white/80" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '20px' }}>
@@ -817,12 +872,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               />
             </div>
           ))}
-        </div>
-
-        {/* Created By - Top Left */}
-        <div className="absolute top-10 left-3 z-50 flex flex-col justify-center h-8" style={{ fontFamily: 'Outfit, sans-serif' }}>
-          <span className="text-white/50 text-[10px] font-medium leading-tight">created by</span>
-          <span className="text-white/50 text-xs font-bold leading-tight">dipanshu daga</span>
         </div>
 
         {/* Close Button */}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Upload, Lock, Settings, Download, Mail, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './ui/accordion';
 
 interface LandingPageProps {
   onStartWrapped: (useDemo: boolean, file?: File) => void;
@@ -54,7 +55,7 @@ export function LandingPage({ onStartWrapped, isLoading }: LandingPageProps) {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
 
-      <div className="relative z-10 container mx-auto px-6 py-16 max-w-4xl">
+      <div className="relative z-10 container mx-auto px-6 py-8 max-w-4xl">
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -62,65 +63,78 @@ export function LandingPage({ onStartWrapped, isLoading }: LandingPageProps) {
           transition={{ duration: 0.6 }}
           className="text-center mb-16 flex flex-col items-center"
         >
-          <h1 className="text-6xl md:text-9xl mb-6 px-4 tracking-tighter" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 0.95 }}>
-            Instagram<br />Wrapped
-          </h1>
-          <p className="text-xl text-white/70" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+          <p className="text-lg text-white/70 mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
             Your year in review
           </p>
+          <h1 className="text-6xl md:text-9xl mb-12 px-4 tracking-tighter" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 0.95 }}>
+            Instagram<br />Wrapped
+          </h1>
+          <h2 className="text-2xl md:text-4xl text-white/95 max-w-2xl leading-tight" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+            Download your data, upload it,<br />and see your wrapped
+          </h2>
         </motion.div>
 
-        {/* Instructions */}
+        {/* Instructions Accordion */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-10 mb-8"
+          className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 mb-8"
         >
-          <h2 className="text-2xl mb-8 text-center" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
-            How to get your data
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: Settings,
-                title: 'Request Export',
-                desc: 'Settings → Accounts Center → Export your information'
-              },
-              {
-                icon: Mail,
-                title: 'Download ZIP',
-                desc: 'Wait for email with download link (few mins to hours)'
-              },
-              {
-                icon: Upload,
-                title: 'Upload Here',
-                desc: 'Drop the ZIP file in the area below'
-              }
-            ].map((step, i) => {
-              const Icon = step.icon;
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 * i }}
-                  className="flex flex-col items-center text-center group"
-                >
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-white/10 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:border-purple-500/40 transition-all duration-300">
-                    <Icon className="w-8 h-8 text-white/90 group-hover:text-white transition-colors" />
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="instructions" className="border-0">
+              <AccordionTrigger className="text-lg md:text-2xl hover:no-underline px-8 py-6" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                <span className="text-white">How to get your data</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-8 pb-6">
+                <div className="space-y-4">
+                  <div className="flex gap-4 items-start">
+                    <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                      1
+                    </div>
+                    <div className="pt-1 md:pt-3">
+                      <p className="text-white/90 text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+                        Open Instagram → Settings → Accounts Center → Your information and permissions
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="text-lg mb-3" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
-                    {step.title}
-                  </h3>
-                  <p className="text-white/60 text-sm leading-relaxed group-hover:text-white/80 transition-colors" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
-                    {step.desc}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                      2
+                    </div>
+                    <div className="pt-1 md:pt-3">
+                      <p className="text-white/90 text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+                        Export your information → Create your export → Choose your profile
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                      3
+                    </div>
+                    <div className="pt-1 md:pt-3">
+                      <p className="text-white/90 text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+                        Export to device → Keep default settings → Start export
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                      4
+                    </div>
+                    <div className="pt-1 md:pt-3">
+                      <p className="text-white/90 text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+                        Wait for email (few mins to hours) → Download the ZIP file → Upload below
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </motion.div>
 
         {/* Privacy */}
@@ -193,7 +207,7 @@ export function LandingPage({ onStartWrapped, isLoading }: LandingPageProps) {
                 className="text-white hover:text-white/80 transition-colors disabled:opacity-50"
                 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}
               >
-                Try Demo Version →
+                See Wrapped Demo →
               </button>
             </div>
           </div>
