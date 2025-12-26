@@ -1,10 +1,6 @@
 # Instagram Wrapped
 
-A beautiful data visualization app that creates your personalized Instagram year-in-review, inspired by Spotify Wrapped.
-
-## What is Instagram Wrapped?
-
-Instagram Wrapped analyzes your Instagram data to create an engaging, visual summary of your year on Instagram. See your top posts, most active days, engagement metrics, and more in a beautiful, shareable format.
+Instagram Wrapped analyzes your Instagram data to create an engaging, visual summary of your year on Instagram.
 
 ## How to See Your Instagram Wrapped
 
@@ -13,14 +9,13 @@ Instagram Wrapped analyzes your Instagram data to create an engaging, visual sum
 1. Open Instagram app on your phone
 2. Go to your **Profile** → tap the menu (three lines) → **Settings and Privacy**
 3. Tap **Accounts Center** → **Your information and permissions**
-4. Tap **Download your information** → **Request a download**
-5. Select your Instagram account
-6. Choose **Select types of information** and select **All available information** (or customize to include Posts, Stories, Comments, Likes)
-7. Set **Date range** to "All time" or your preferred range
-8. Choose **Format**: HTML (the app supports HTML format)
-9. Tap **Submit request**
-10. Wait for Instagram to send you an email (can take a few minutes to 48 hours)
-11. Download the ZIP file from the email link
+4. Tap **Export your information** → **Create your export**
+5. Choose your profile and tap **Export to device**
+7. Choose **Select types of information** and select **All available information** (or customize to include Posts, Stories, Comments, Likes)
+8. Leave the deafult options
+10. Tap **Start export**
+11. Wait for Instagram to send you an email (can take a few minutes to hours)
+12. Download the ZIP file from the email link
 
 ### Step 2: Upload to Instagram Wrapped
 
@@ -35,7 +30,3 @@ Instagram Wrapped analyzes your Instagram data to create an engaging, visual sum
 - **No Data Storage**: We don't store, collect, or transmit your data anywhere
 - **Open Source**: The code is fully open source and auditable
 - **Secure**: Your Instagram data never leaves your device
-
----
-
-Made with ❤️ by [Dipanshu Daga](https://github.com/dipanshudaga)
