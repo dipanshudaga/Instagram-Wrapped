@@ -187,45 +187,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     }
   };
 
-  // Intro card variants with stagger for polished first impression
-  const introContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0
-      }
-    }
-  };
-
-  const introItemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] as const }
-    }
-  };
-
-  // Content card variants - instant appearance for smooth transitions
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.2 }
-    }
-  };
 
   // Generate pill positions once (scaled for 420px width)
   const pillPositions = useRef(generatePillPositions(15).map(pos => ({
@@ -240,16 +201,13 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     // CARD 1: Intro
     <motion.div
       key="intro"
-      initial="hidden"
-      animate="visible"
-      variants={introContainerVariants}
       className="relative w-full h-full flex flex-col items-center justify-center p-8 overflow-hidden"
       style={{
         background: 'radial-gradient(circle at center, #8B5CF6 0%, #000000 120%)'
       }}
     >
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
-      <motion.div variants={introItemVariants} className="text-center absolute top-24 bottom-28 left-8 right-8 flex flex-col items-center justify-center">
+      <motion.div className="text-center absolute top-24 bottom-28 left-8 right-8 flex flex-col items-center justify-center">
         <motion.h1
           className="text-white leading-none mb-8"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, letterSpacing: '-0.02em', fontSize: '52px' }}
@@ -257,7 +215,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
           INSTAGRAM WRAPPED
         </motion.h1>
         <motion.p
-          variants={introItemVariants}
+
           className="text-white/70"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500, fontSize: '18px' }}
         >
@@ -292,9 +250,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     // CARD 2: Account Age
     <motion.div
       key="age"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
       className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
       style={{ background: '#0F0F0F' }}
     >
@@ -320,13 +275,13 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         {displayData.accountAge && (
           <>
             <motion.p
-              variants={itemVariants}
+
               className="text-white/60 tracking-widest mb-6"
               style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '20px' }}
             >
               Chronically online since
             </motion.p>
-            <motion.div variants={itemVariants} className="mb-6">
+            <motion.div className="mb-6">
               <div className="text-white leading-none mb-2">
                 <NumberCounter
                   value={displayData.accountAge.years}
@@ -338,7 +293,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               </p>
             </motion.div>
             {displayData.accountAge.months > 0 && (
-              <motion.div variants={itemVariants} className="mb-6">
+              <motion.div className="mb-6">
                 <div className="text-white leading-none mb-2">
                   <NumberCounter value={displayData.accountAge.months} fontSize="64px" />
                 </div>
@@ -355,9 +310,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     // CARD 3: Chat Partners
     <motion.div
       key="chats"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
       className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
       style={{ background: 'radial-gradient(circle at top right, #8B5CF6 0%, #1a1a1a 100%)' }}
     >
@@ -377,7 +329,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         🌟
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-8">
+        <motion.div className="mb-8">
           <h2 className="text-white text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}>
             Your top 3
           </h2>
@@ -389,7 +341,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         {displayData.topChatPartners && displayData.topChatPartners.slice(0, 3).map((partner, i) => (
           <motion.div
             key={i}
-            variants={itemVariants}
+
             className="rounded-2xl p-6 mb-5 flex items-center justify-between relative overflow-hidden"
             style={{
               background: 'rgba(255, 255, 255, 0.1)',
@@ -411,7 +363,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         ))}
 
         <motion.p
-          variants={itemVariants}
+
           className="text-white/70 text-sm mt-6"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}
         >
@@ -422,9 +374,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     // CARD 4: Likes Given
     <motion.div
       key="likes"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
       className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
       style={{ background: 'radial-gradient(circle at bottom left, #EC4899 0%, #1a1a1a 100%)' }}
     >
@@ -444,7 +393,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         ❤️
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-8">
+        <motion.div className="mb-8">
           <div className="text-white leading-none mb-3">
             <NumberCounter
               value={displayData.likes?.total || 0}
@@ -458,7 +407,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
 
         {displayData.likes?.topCreator && (
           <motion.div
-            variants={itemVariants}
+
             className="rounded-2xl p-7 relative overflow-hidden"
             style={{
               background: 'rgba(255, 255, 255, 0.1)',
@@ -482,9 +431,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     // CARD 5: Comments
     <motion.div
       key="comments"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
       className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
       style={{ background: 'radial-gradient(circle at top left, #3B82F6 0%, #1a1a1a 100%)' }}
     >
@@ -504,7 +450,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         💬
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-8">
+        <motion.div className="mb-8">
           <div className="text-white leading-none mb-3">
             <NumberCounter value={displayData.comments?.total || 0} fontSize="64px" />
           </div>
@@ -515,7 +461,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
 
         {displayData.comments?.topCreator && displayData.comments.topCreatorCount > 0 && (
           <motion.div
-            variants={itemVariants}
+
             className="rounded-2xl p-7 relative overflow-hidden"
             style={{
               background: 'rgba(255, 255, 255, 0.1)',
@@ -539,9 +485,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     // CARD 6: Content Created
     <motion.div
       key="content"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
       className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
       style={{ background: 'radial-gradient(circle at center, #06B6D4 0%, #1a1a1a 100%)' }}
     >
@@ -562,7 +505,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
         <motion.h2
-          variants={itemVariants}
+
           className="text-white text-3xl mb-8"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}
         >
@@ -570,7 +513,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         </motion.h2>
 
         <motion.div
-          variants={itemVariants}
+
           className="rounded-2xl p-6 mb-5 flex items-center justify-between relative overflow-hidden"
           style={{
             background: 'rgba(255, 255, 255, 0.1)',
@@ -589,7 +532,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         </motion.div>
 
         <motion.div
-          variants={itemVariants}
+
           className="rounded-2xl p-6 mb-5 flex items-center justify-between relative overflow-hidden"
           style={{
             background: 'rgba(255, 255, 255, 0.1)',
@@ -608,7 +551,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         </motion.div>
 
         <motion.div
-          variants={itemVariants}
+
           className="rounded-2xl p-6 mb-5 flex items-center justify-between relative overflow-hidden"
           style={{
             background: 'rgba(255, 255, 255, 0.1)',
@@ -631,9 +574,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     // CARD 7: Top Shared To
     <motion.div
       key="shared"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
       className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
       style={{ background: 'radial-gradient(circle at top right, #10B981 0%, #1a1a1a 100%)' }}
     >
@@ -653,9 +593,9 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         🔥
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-8">
+        <motion.div className="mb-8">
           <h2 className="text-white text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}>
-            You share reels
+            You shared reels
           </h2>
           <p className="text-white/80" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '20px', lineHeight: 1.4 }}>
             the most to
@@ -665,7 +605,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         {displayData.topSharedTo && displayData.topSharedTo.slice(0, 3).map((item, i) => (
           <motion.div
             key={i}
-            variants={itemVariants}
+
             className="rounded-2xl p-6 mb-5 flex items-center justify-between relative overflow-hidden"
             style={{
               background: 'rgba(255, 255, 255, 0.1)',
@@ -691,9 +631,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     // CARD 8: Top Received From
     <motion.div
       key="received"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
       className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
       style={{ background: 'radial-gradient(circle at bottom left, #F97316 0%, #1a1a1a 100%)' }}
     >
@@ -713,7 +650,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         📩
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-8">
+        <motion.div className="mb-8">
           <h2 className="text-white text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, lineHeight: 1.2 }}>
             You get reels
           </h2>
@@ -725,7 +662,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         {displayData.topReceivedFrom && displayData.topReceivedFrom.slice(0, 3).map((item, i) => (
           <motion.div
             key={i}
-            variants={itemVariants}
+
             className="rounded-2xl p-6 mb-5 flex items-center justify-between relative overflow-hidden"
             style={{
               background: 'rgba(255, 255, 255, 0.1)',
@@ -751,9 +688,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     // CARD 9: Topics
     <motion.div
       key="topics"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
       className="relative w-full h-full flex flex-col justify-center px-8 md:px-12 pt-24 pb-32 overflow-hidden"
       style={{ background: 'radial-gradient(circle at center, #1E293B 0%, #000000 100%)' }}
     >
@@ -773,7 +707,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         🧠
       </motion.div>
       <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
-        <motion.div variants={itemVariants} className="mb-6">
+        <motion.div className="mb-6">
           <h2 className="text-white text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900 }}>
             Your Algorithm
           </h2>
@@ -787,7 +721,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
           {displayData.topics && displayData.topics.slice(0, 12).map((topic, i) => (
             <motion.div
               key={i}
-              variants={itemVariants}
+
               className="bg-white/10 backdrop-blur rounded-full px-2.5 py-1.5 flex items-center gap-1.5"
             >
               <span className="text-base">{topic.emoji}</span>
@@ -800,7 +734,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
 
         {displayData.topics && displayData.topics.length > 12 && (
           <motion.p
-            variants={itemVariants}
+
             className="text-white/60 text-xs mt-3"
             style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}
           >
@@ -813,9 +747,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     // CARD 10: Outro
     <motion.div
       key="outro"
-      initial="hidden"
-      animate="visible"
-      variants={introContainerVariants}
       className="relative w-full h-full flex flex-col items-center justify-center px-8 py-12 overflow-hidden bg-black"
       style={{
         background: 'radial-gradient(circle at center, #7C3AED 0%, #0F0F0F 120%)',
@@ -823,7 +754,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       }}
     >
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
-      <motion.div variants={introItemVariants} className="text-center absolute top-24 bottom-28 left-8 right-8 flex flex-col items-center justify-center">
+      <motion.div className="text-center absolute top-24 bottom-28 left-8 right-8 flex flex-col items-center justify-center">
         <motion.h1
           className="text-white leading-none mb-8"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, letterSpacing: '-0.02em', fontSize: '52px' }}
@@ -831,7 +762,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
           AND IT'S A WRAP
         </motion.h1>
         <motion.p
-          variants={introItemVariants}
+
           className="text-white/70"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500, fontSize: '18px' }}
         >
@@ -864,19 +795,17 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     </motion.div>
   ];
 
+  // Pure crossfade - clean and fast
   const variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? '100%' : '-100%',
+    enter: {
       opacity: 0
-    }),
+    },
     center: {
-      x: 0,
       opacity: 1
     },
-    exit: (direction: number) => ({
-      x: direction < 0 ? '100%' : '-100%',
+    exit: {
       opacity: 0
-    })
+    }
   };
 
   return (
@@ -915,17 +844,16 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
 
         {/* Story Card */}
         <div className="relative w-full h-full">
-          <AnimatePresence initial={false} custom={direction}>
+          <AnimatePresence initial={false}>
             <motion.div
               key={currentCard}
-              custom={direction}
               variants={variants}
               initial="enter"
               animate="center"
               exit="exit"
               transition={{
-                x: { type: "tween", duration: 0.25, ease: "easeInOut" },
-                opacity: { duration: 0.25 }
+                duration: 0.2,
+                ease: "easeInOut"
               }}
               className="absolute inset-0"
             >
@@ -982,9 +910,6 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               e.stopPropagation();
               handleShare();
             }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
             disabled={isSharing}
             className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-white/70 hover:text-white hover:bg-white/20 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
             style={{ touchAction: 'manipulation' }}

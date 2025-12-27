@@ -8,7 +8,7 @@ interface NumberCounterProps {
   onComplete?: () => void;
 }
 
-export function NumberCounter({ value, duration = 0.4, fontSize = '140px', onComplete }: NumberCounterProps) {
+export function NumberCounter({ value, duration = 0.25, fontSize = '140px', onComplete }: NumberCounterProps) {
   const [count, setCount] = useState(0);
   const startTimeRef = useRef<number | null>(null);
 
