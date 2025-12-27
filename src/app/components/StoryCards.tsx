@@ -192,8 +192,8 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
+        staggerChildren: 0.05,
+        delayChildren: 0
       }
     }
   };
@@ -203,7 +203,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }
+      transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] as const }
     }
   };
 
@@ -895,7 +895,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
 
         {/* Story Card */}
         <div className="relative w-full h-full">
-          <AnimatePresence initial={false} mode="wait" custom={direction}>
+          <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={currentCard}
               custom={direction}
@@ -904,8 +904,8 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               animate="center"
               exit="exit"
               transition={{
-                x: { type: "tween", duration: 0.3, ease: "easeInOut" },
-                opacity: { duration: 0.15 }
+                x: { type: "tween", duration: 0.25, ease: "easeInOut" },
+                opacity: { duration: 0.25 }
               }}
               className="absolute inset-0"
             >
