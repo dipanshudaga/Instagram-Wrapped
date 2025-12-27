@@ -89,44 +89,44 @@ export function LandingPage({ onStartWrapped, isLoading }: LandingPageProps) {
               <AccordionContent className="px-8 pb-6">
                 <div className="space-y-4">
                   <div className="flex gap-4 items-start">
-                    <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                    <div className="flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
                       1
                     </div>
-                    <div className="pt-1 md:pt-3">
-                      <p className="text-white/90 text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+                    <div className="pt-0.5 md:pt-3">
+                      <p className="text-white/90 text-sm md:text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
                         Open Instagram → Settings → Accounts Center → Your information and permissions
                       </p>
                     </div>
                   </div>
 
                   <div className="flex gap-4 items-start">
-                    <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                    <div className="flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
                       2
                     </div>
-                    <div className="pt-1 md:pt-3">
-                      <p className="text-white/90 text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+                    <div className="pt-0.5 md:pt-3">
+                      <p className="text-white/90 text-sm md:text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
                         Export your information → Create your export → Choose your profile
                       </p>
                     </div>
                   </div>
 
                   <div className="flex gap-4 items-start">
-                    <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                    <div className="flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
                       3
                     </div>
-                    <div className="pt-1 md:pt-3">
-                      <p className="text-white/90 text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+                    <div className="pt-0.5 md:pt-3">
+                      <p className="text-white/90 text-sm md:text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
                         Export to device → Keep default settings → Start export
                       </p>
                     </div>
                   </div>
 
                   <div className="flex gap-4 items-start">
-                    <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+                    <div className="flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center text-xs md:text-sm" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
                       4
                     </div>
-                    <div className="pt-1 md:pt-3">
-                      <p className="text-white/90 text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+                    <div className="pt-0.5 md:pt-3">
+                      <p className="text-white/90 text-sm md:text-base" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
                         Wait for email (few mins to hours) → Download the ZIP file → Upload below
                       </p>
                     </div>

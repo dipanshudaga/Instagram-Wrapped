@@ -18,7 +18,7 @@ Instagram Wrapped analyzes your Instagram data to create an engaging, visual sum
 
 ### Step 2: Upload to Instagram Wrapped
 
-1. Visit [Instagram Wrapped](https://dipanshudaga.github.io/Instagram-Wrapped/)
+1. Visit [Instagram Wrapped](https://igwrapped.fun)
 2. Click **"Choose File"** or drag and drop your ZIP file
 3. The app will process your data locally in your browser
 4. Enjoy your personalised Instagram Wrapped!

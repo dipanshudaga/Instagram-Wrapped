@@ -129,9 +129,9 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
 
       if (!blob) throw new Error('Failed to generate image');
 
-      // Slide number: cards 1-8 map to slides 2-9 (card 0 is intro, card 9 is outro)
-      const slideNumber = currentCard + 1;
-      const fileName = `Instagram Wrapped - ${slideNumber}.png`;
+      // Slide number: cards 0-9 map to slides 1-10
+      const slideNumber = currentCard;
+      const fileName = `Instagram Wrapped ${slideNumber}.png`;
       const file = new File([blob], fileName, { type: 'image/png' });
 
       // 2. Share using Web Share API
@@ -171,8 +171,8 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               style: { borderRadius: '0px' }
             });
             if (blob) {
-              const slideNumber = currentCard + 1;
-              const fileName = `Instagram Wrapped - ${slideNumber}.png`;
+              const slideNumber = currentCard;
+              const fileName = `Instagram Wrapped ${slideNumber}.png`;
               const link = document.createElement('a');
               link.download = fileName;
               link.href = URL.createObjectURL(blob);
@@ -895,7 +895,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
 
         {/* Story Card */}
         <div className="relative w-full h-full">
-          <AnimatePresence initial={false} custom={direction}>
+          <AnimatePresence initial={false} mode="wait" custom={direction}>
             <motion.div
               key={currentCard}
               custom={direction}
@@ -905,7 +905,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               exit="exit"
               transition={{
                 x: { type: "tween", duration: 0.3, ease: "easeInOut" },
-                opacity: { duration: 0.2 }
+                opacity: { duration: 0.15 }
               }}
               className="absolute inset-0"
             >
