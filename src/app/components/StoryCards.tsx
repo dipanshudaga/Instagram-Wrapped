@@ -187,7 +187,8 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     }
   };
 
-  const containerVariants = {
+  // Intro card variants with stagger for polished first impression
+  const introContainerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -198,12 +199,31 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
     }
   };
 
-  const itemVariants = {
+  const introItemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] as const }
+    }
+  };
+
+  // Content card variants - instant appearance for smooth transitions
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 0.2 }
     }
   };
 
@@ -222,14 +242,14 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       key="intro"
       initial="hidden"
       animate="visible"
-      variants={containerVariants}
+      variants={introContainerVariants}
       className="relative w-full h-full flex flex-col items-center justify-center p-8 overflow-hidden"
       style={{
         background: 'radial-gradient(circle at center, #8B5CF6 0%, #000000 120%)'
       }}
     >
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
-      <motion.div variants={itemVariants} className="text-center absolute top-24 bottom-28 left-8 right-8 flex flex-col items-center justify-center">
+      <motion.div variants={introItemVariants} className="text-center absolute top-24 bottom-28 left-8 right-8 flex flex-col items-center justify-center">
         <motion.h1
           className="text-white leading-none mb-8"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, letterSpacing: '-0.02em', fontSize: '52px' }}
@@ -237,7 +257,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
           INSTAGRAM WRAPPED
         </motion.h1>
         <motion.p
-          variants={itemVariants}
+          variants={introItemVariants}
           className="text-white/70"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500, fontSize: '18px' }}
         >
@@ -795,7 +815,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       key="outro"
       initial="hidden"
       animate="visible"
-      variants={containerVariants}
+      variants={introContainerVariants}
       className="relative w-full h-full flex flex-col items-center justify-center px-8 py-12 overflow-hidden bg-black"
       style={{
         background: 'radial-gradient(circle at center, #7C3AED 0%, #0F0F0F 120%)',
@@ -803,7 +823,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       }}
     >
       <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
-      <motion.div variants={itemVariants} className="text-center absolute top-24 bottom-28 left-8 right-8 flex flex-col items-center justify-center">
+      <motion.div variants={introItemVariants} className="text-center absolute top-24 bottom-28 left-8 right-8 flex flex-col items-center justify-center">
         <motion.h1
           className="text-white leading-none mb-8"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, letterSpacing: '-0.02em', fontSize: '52px' }}
@@ -811,7 +831,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
           AND IT'S A WRAP
         </motion.h1>
         <motion.p
-          variants={itemVariants}
+          variants={introItemVariants}
           className="text-white/70"
           style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500, fontSize: '18px' }}
         >
