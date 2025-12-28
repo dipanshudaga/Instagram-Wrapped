@@ -539,7 +539,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
               {displayData.savedPosts.topCollection}
             </p>
             <p className="text-white/80" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
-              {displayData.savedPosts.topCollectionCount} saved reels
+              {displayData.savedPosts.topCollectionCount} posts
             </p>
           </motion.div>
         )}
