@@ -5,6 +5,7 @@ export interface InstagramData {
   topChatPartners: Array<{ name: string; count: number }>;
   likes: { total: number; topCreator: string | null; topCreatorCount: number };
   comments: { total: number; topCreator: string | null; topCreatorCount: number };
+  savedPosts: { total: number; topCreator: string | null; topCreatorCount: number; collectionsCount: number; topCollection: string | null; topCollectionCount: number };
   avgResponseTime: { hours: number; minutes: number } | null;
   topSharedTo: Array<{ name: string; count: number }>;
   topReceivedFrom: Array<{ name: string; count: number }>;
@@ -131,6 +132,7 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
     topChatPartners: [],
     likes: { total: 0, topCreator: null, topCreatorCount: 0 },
     comments: { total: 0, topCreator: null, topCreatorCount: 0 },
+    savedPosts: { total: 0, topCreator: null, topCreatorCount: 0, collectionsCount: 0, topCollection: null, topCollectionCount: 0 },
     avgResponseTime: null,
     topSharedTo: [],
     topReceivedFrom: [],
@@ -588,6 +590,160 @@ export async function parseInstagramData(file: File): Promise<InstagramData> {
 
   // Use totalCommentsOnOthers instead of totalComments (exclude self-comments)
   data.comments.total = totalCommentsOnOthers;
+
+  // ============================================================================
+  // SAVED POSTS TRACKING
+  // ============================================================================
+  const savedPostsHTML = await readHTML('your_instagram_activity/saved/saved_posts.html');
+
+  if (savedPostsHTML) {
+    const doc = parseHTML(savedPostsHTML);
+    const blocks = Array.from(doc.querySelectorAll('div.pam'));
+
+    data.savedPosts.total = blocks.length;
+
+    const savedCreatorCounts: Record<string, number> = {};
+
+    for (const block of blocks) {
+      let mediaOwner: string | null = null;
+
+      // Attempt 1: Get username from h2 tag
+      const h2 = block.querySelector('h2');
+      if (h2) {
+        mediaOwner = cleanText(h2.textContent || '');
+      }
+
+      // Attempt 2: Look for "Media Owner" cell in table
+      if (!mediaOwner) {
+        const rows = Array.from(block.querySelectorAll('tr'));
+        for (const row of rows) {
+          const cells = row.querySelectorAll('td');
+          if (cells.length >= 2) {
+            const key = cleanText(cells[0].textContent || '');
+            const value = cleanText(cells[1].textContent || '');
+            if (key === 'Media Owner') {
+              mediaOwner = value;
+              break;
+            }
+          }
+        }
+      }
+
+      // Attempt 3: Look for links to user profiles
+      if (!mediaOwner) {
+        const links = Array.from(block.querySelectorAll('a'));
+        for (const link of links) {
+          const href = link.getAttribute('href') || '';
+          if (href.includes('instagram.com/') && !href.includes('/p/') && !href.includes('/reel/')) {
+            const match = href.match(/instagram\.com\/([^/?]+)/);
+            if (match) {
+              mediaOwner = match[1];
+              break;
+            }
+          }
+        }
+      }
+
+      if (mediaOwner) {
+        const normalizedOwner = mediaOwner.toLowerCase().replace(/^@/, '');
+        const ownerWithoutAt = normalizedOwner.replace('@', '');
+        const normalizedUsername = (identity.username || '').toLowerCase().replace(/^@/, '');
+        const normalizedName = (identity.name || '').toLowerCase().replace(/^@/, '');
+        const usernameWithoutAt = normalizedUsername.replace('@', '');
+
+        // Exclude if saved from self
+        if (normalizedOwner !== normalizedUsername &&
+            normalizedOwner !== normalizedName &&
+            ownerWithoutAt !== normalizedUsername &&
+            ownerWithoutAt !== usernameWithoutAt &&
+            normalizedOwner !== usernameWithoutAt) {
+          savedCreatorCounts[mediaOwner] = (savedCreatorCounts[mediaOwner] || 0) + 1;
+        }
+      }
+    }
+
+    const sortedSavedCreators = Object.entries(savedCreatorCounts)
+      .sort((a, b) => b[1] - a[1]);
+
+    if (sortedSavedCreators.length > 0) {
+      data.savedPosts.topCreator = `@${sortedSavedCreators[0][0]}`;
+      data.savedPosts.topCreatorCount = sortedSavedCreators[0][1];
+    }
+  }
+
+  // Count saved collections and find top collection
+  const savedCollectionsHTML = await readHTML('your_instagram_activity/saved/saved_collections.html');
+  if (savedCollectionsHTML) {
+    const doc = parseHTML(savedCollectionsHTML);
+    const blocks = Array.from(doc.querySelectorAll('div.pam'));
+
+    // Track collections and count posts per collection
+    const collectionPostCounts: Record<string, number> = {};
+    let currentCollection: string | null = null;
+    let collectionCount = 0;
+
+    for (let i = 0; i < blocks.length; i++) {
+      const block = blocks[i];
+      const text = block.textContent || '';
+
+      // Collections have both "Creation Time" and "Update Time"
+      // Posts only have "Added Time"
+      if (text.includes('Creation Time') && text.includes('Update Time')) {
+        collectionCount++;
+
+        // Extract collection name - try multiple methods
+        currentCollection = null;
+
+        // Method 1: Look for "Name" in table cells
+        const rows = Array.from(block.querySelectorAll('tr'));
+        for (const row of rows) {
+          const cells = row.querySelectorAll('td');
+          if (cells.length >= 2) {
+            const key = cleanText(cells[0].textContent || '');
+            const value = cleanText(cells[1].textContent || '');
+            if (key === 'Name') {
+              currentCollection = value;
+              collectionPostCounts[currentCollection] = 0;
+              break;
+            }
+          }
+        }
+
+        // Method 2: Extract from text pattern "CollectionName<name>Creation Time"
+        if (!currentCollection) {
+          const match = text.match(/Collection\s*Name\s*([^\n]+?)\s*Creation Time/i);
+          if (match) {
+            currentCollection = cleanText(match[1]);
+            collectionPostCounts[currentCollection] = 0;
+          }
+        }
+
+        // Method 3: Look for text before "Creation Time"
+        if (!currentCollection) {
+          const beforeCreation = text.split('Creation Time')[0];
+          const nameMatch = beforeCreation.match(/Name\s*([^\n]+?)$/i);
+          if (nameMatch) {
+            currentCollection = cleanText(nameMatch[1]);
+            collectionPostCounts[currentCollection] = 0;
+          }
+        }
+      } else if (text.includes('Added Time') && currentCollection) {
+        // This is a post within the current collection
+        collectionPostCounts[currentCollection]++;
+      }
+    }
+
+    data.savedPosts.collectionsCount = collectionCount;
+
+    // Find collection with most posts
+    const sortedCollections = Object.entries(collectionPostCounts)
+      .sort((a, b) => b[1] - a[1]);
+
+    if (sortedCollections.length > 0) {
+      data.savedPosts.topCollection = sortedCollections[0][0];
+      data.savedPosts.topCollectionCount = sortedCollections[0][1];
+    }
+  }
 
   // ============================================================================
   // METRICS 6-9: MESSAGE ANALYSIS

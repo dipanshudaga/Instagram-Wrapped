@@ -28,6 +28,14 @@ const mockData: InstagramData = {
     topCreator: '@meme_lord',
     topCreatorCount: 89
   },
+  savedPosts: {
+    total: 3842,
+    topCreator: '@travel_inspiration',
+    topCreatorCount: 156,
+    collectionsCount: 24,
+    topCollection: 'Travel Inspo',
+    topCollectionCount: 156
+  },
   avgResponseTime: { hours: 0, minutes: 2 },
   topSharedTo: [
     { name: 'sarah_designs', count: 234 },
@@ -66,7 +74,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
   const [isSharing, setIsSharing] = useState(false);
   // SoundPlayer removed
   const cardRef = useRef<HTMLDivElement>(null);
-  const totalCards = 10;
+  const totalCards = 11;
   const autoScrollDuration = 10000; // 10 seconds per card
 
   const handleNext = useCallback(() => {
@@ -401,7 +409,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
             />
           </div>
           <p className="text-white text-2xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, lineHeight: 1.3 }}>
-            likes given ❤️
+            double taps given ❤️
           </p>
         </motion.div>
 
@@ -415,7 +423,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
             }}
           >
             <p className="text-white/70 text-xs uppercase tracking-widest mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
-              Posts you liked the most
+              You're biggest fan of
             </p>
             <p className="text-white text-xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
               {displayData.likes.topCreator}
@@ -469,7 +477,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
             }}
           >
             <p className="text-white/70 text-xs uppercase tracking-widest mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
-              Posts you commented most on
+              Most engaged with
             </p>
             <p className="text-white text-xl mb-2 break-words" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
               {displayData.comments.topCreator}
@@ -482,7 +490,63 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       </div>
     </motion.div>,
 
-    // CARD 6: Content Created
+    // CARD 6: Saved Posts
+    <motion.div
+      key="saved"
+      className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
+      style={{ background: 'radial-gradient(circle at top right, #F59E0B 0%, #1a1a1a 100%)' }}
+    >
+      <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+      {/* Background Icon - Animated */}
+      <motion.div
+        className="absolute -right-8 top-24 text-[200px] opacity-5 pointer-events-none -rotate-12"
+        animate={{
+          y: [0, -20, 0],
+        }}
+        transition={{
+          duration: 6.5,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
+        🔖
+      </motion.div>
+      <div className="absolute top-24 bottom-28 left-8 right-8 flex flex-col justify-center">
+        <motion.div className="mb-10">
+          <div className="text-white leading-none mb-4">
+            <NumberCounter
+              value={displayData.savedPosts?.total || 0}
+              fontSize="64px"
+            />
+          </div>
+          <p className="text-white text-2xl" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, lineHeight: 1.3 }}>
+            posts saved 🔖
+          </p>
+        </motion.div>
+
+        {displayData.savedPosts?.topCollection && (
+          <motion.div
+            className="rounded-2xl p-7 relative overflow-hidden"
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+            }}
+          >
+            <p className="text-white/70 text-xs uppercase tracking-widest mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
+              Top collection
+            </p>
+            <p className="text-white text-xl mb-2" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700 }}>
+              {displayData.savedPosts.topCollection}
+            </p>
+            <p className="text-white/80" style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500 }}>
+              {displayData.savedPosts.topCollectionCount} saved reels
+            </p>
+          </motion.div>
+        )}
+      </div>
+    </motion.div>,
+
+    // CARD 7: Content Created
     <motion.div
       key="content"
       className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
@@ -571,7 +635,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       </div>
     </motion.div>,
 
-    // CARD 7: Top Shared To
+    // CARD 8: Top Shared To
     <motion.div
       key="shared"
       className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
@@ -628,7 +692,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       </div>
     </motion.div>,
 
-    // CARD 8: Top Received From
+    // CARD 9: Top Received From
     <motion.div
       key="received"
       className="relative w-full h-full flex flex-col justify-center p-8 md:p-12 overflow-hidden"
@@ -685,7 +749,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       </div>
     </motion.div>,
 
-    // CARD 9: Topics
+    // CARD 10: Topics
     <motion.div
       key="topics"
       className="relative w-full h-full flex flex-col justify-center px-8 md:px-12 pt-24 pb-32 overflow-hidden"
@@ -744,7 +808,7 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
       </div>
     </motion.div>,
 
-    // CARD 10: Outro
+    // CARD 11: Outro
     <motion.div
       key="outro"
       className="relative w-full h-full flex flex-col items-center justify-center px-8 py-12 overflow-hidden bg-black"
@@ -902,8 +966,8 @@ export function StoryCards({ onClose, data = mockData }: StoryCardsProps) {
         )}
       </div>
 
-      {/* Share Button - Hidden on intro (0) and outro (9) */}
-      {currentCard !== 0 && currentCard !== 9 && (
+      {/* Share Button - Hidden on intro (0) and outro (11) */}
+      {currentCard !== 0 && currentCard !== 10 && (
         <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50" id="ui-share-btn">
           <motion.button
             onClick={(e) => {
